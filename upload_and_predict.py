@@ -1,9 +1,12 @@
-from flask import Flask, redirect, render_template, url_for
+from flask import Flask, redirect, render_template, url_for, session
+from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
+from wtforms import SubmitField
 import requests
 
 app = Flask(__name__)
+bootstrap = Bootstrap(app)
 
 # no uploads over 16MB
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
@@ -13,9 +16,10 @@ KERAS_API_URL = 'http://127.0.0.1:8000/predict'
 
 
 class UploadForm(FlaskForm):
-    file = FileField('image', validators=[
+    file = FileField('Choose an image to classify', validators=[
         FileRequired(),
         FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')])
+    submit = SubmitField('Submit')
 
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -30,4 +34,4 @@ def upload():
             return result["predictions"][0]["label"]
         else:
             return 'FAIL'
-    return render_template('upload.html', form=form)
+    return render_template('upload_base.html', form=form)
