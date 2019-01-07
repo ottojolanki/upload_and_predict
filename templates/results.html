@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Image Classifier - Prediction Results{% endblock %}
+
+{% block page_content %}
+<img src=data:;base64,{{image}} width="60%">
+<ul>
+    {% for prediction in predictions %}
+        <li>{{prediction}}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,3 +1,4 @@
+from base64 import b64encode
 from flask import Flask, redirect, render_template, url_for, session
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
@@ -30,8 +31,13 @@ def upload():
         payload = {"image" : imagedata}
         print(type(imagedata))
         result = requests.post(KERAS_API_URL, files=payload).json()
-        if result["success"]:
-            return result["predictions"][0]["label"]
+        predictions = []
+        image_b64 = b64encode(imagedata).decode('ascii')
+        print(type(imagedata))
+        for item in result['predictions']:
+            predictions.append('{0} {1:.5f}'.format(item['label'], item['probability']))
+        if result['success']:
+            return render_template('results.html', predictions=predictions, image=image_b64)
         else:
             return 'FAIL'
     return render_template('upload_base.html', form=form)
